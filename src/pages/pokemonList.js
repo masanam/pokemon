@@ -3,6 +3,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import Grid from '@material-ui/core/Grid';
 import pokeColor from '../pages/pokeColor'
 import '../assets/style.css'
+import { Link } from 'react-router-dom';
 
 const useStyles = makeStyles(theme => ({
   /*style grid*/
@@ -18,7 +19,9 @@ function PokemonList({ pokemon }) {
   return (
     <>
     <div className='gridContainer'>
-      <div className={classes.grid} onClick={() => console.log(pokemon.name)}>
+    <Link to={'/' + pokemon.name} style={{ textDecoration: 'none' }} >
+
+      <div className={classes.grid}>
         
         <div className='pokeType' style={{ backgroundColor: pokeColor[pokemon.name] }}>
 
@@ -45,6 +48,7 @@ function PokemonList({ pokemon }) {
           </div>
         </div>
       </div>
+      </Link>
     </div>
     </>
   )

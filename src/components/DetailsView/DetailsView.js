@@ -1,42 +1,44 @@
-import ReactDOM from 'react-dom';
-import { useCallback, useState } from 'react';
-import { usePokemons } from '../../context/PokemonsProvider';
-import { BackButton } from '../BackButton';
-import { Card } from '../Card';
-import { Details } from '../Details';
-import { Overlay } from '../Overlay';
-import './DetailsView.css';
+import React, {useState, useEffect} from 'react'
+import { useParams } from 'react-router-dom';
+import { getPokemon, getAllPokemon } from './../../services/pokeService'
+import pokeColor from './../../pages/pokeColor'
 
-export default function DetailsView() {
-	const { currentPokemon, setCurrentPokemonId } = usePokemons();
-	const [ isHidden, seIsHidden ] = useState( false );
 
-	const closeModal = useCallback( () => {
-		seIsHidden( true );
-	}, [] );
+function DetailsView() {
+  const { pokemonName } = useParams();
+  const [pokemonData, setPokemonData] = useState([])
+  const [loading, isLoading] = useState(true)
+  const apiURL = 'https://pokeapi.co/api/v2/pokemon'
 
-	const handleAnimationEnd = useCallback( ( { animationName } ) => {
-		if ( animationName !== 'pull-down-center' ) {
-			return;
-		}
+  useEffect(() => {
+    async function fetchData() {
+      let response = await getAllPokemon(apiURL)
+      await loadPokemon(response.results)
+      isLoading(false)
+    //   console.log(response)
+    }
+    fetchData()
+  }, [])
 
-		seIsHidden( false );
-		setCurrentPokemonId( -1 );
-	} );
+  const loadPokemon = async (data) => {
+    let _pokemonData = await Promise.all(data.map(async pokemon => {
+      let pokemonGet = await getPokemon(pokemon)
+      return pokemonGet
 
-	if ( ! currentPokemon ) {
-		return null;
-	}
+    }))
+    setPokemonData(_pokemonData)
+  }
 
-	return ReactDOM.createPortal(
-		<>
-			<Overlay hidden={ isHidden } onClick={ closeModal } />
+  return (
+	<div className='pokeType' style={{ backgroundColor: pokeColor[pokemonName] }}>
+    <div className='pokeName'>
+	   {pokemonName}
+	</div>
+	</div>
 
-			<div className={ `details-view-container ${ isHidden && 'hidden' }` } onAnimationEnd={ handleAnimationEnd }>
-				<BackButton onClick={ closeModal } />
-				<Card pokemon={ currentPokemon }/>
-				<Details pokemon={ currentPokemon } />
-			</div>
-		</>, document.body,
-	);
+);
+
+
 }
+
+export default DetailsView;

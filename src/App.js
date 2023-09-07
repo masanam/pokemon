@@ -4,6 +4,7 @@ import { getPokemon, getAllPokemon } from './services/pokeService'
 import PokemonList from '../src/pages/pokemonList'
 import './App.css';
 import { Heading } from './components/Heading';
+import { DetailsView } from './components/DetailsView';
 
 function App() {
   const [pokemonData, setPokemonData] = useState([])
@@ -24,6 +25,7 @@ function App() {
     let _pokemonData = await Promise.all(data.map(async pokemon => {
       let pokemonGet = await getPokemon(pokemon)
       return pokemonGet
+
     }))
     setPokemonData(_pokemonData)
   }
@@ -39,8 +41,10 @@ function App() {
               return <PokemonList key={i} pokemon={pokemon} />
             })}
           </Route>
+          
         )}
       </div>
+      <Route path="/:pokemonName" component={DetailsView} />
     </Router>
     </>
   );
